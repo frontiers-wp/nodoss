@@ -5,9 +5,9 @@ Contributors: frontiers
 Author URI: https://github.com/frontiers-wp/nodoss
 Tags: security, performance, brute force,
 Description: Lightweight Security plugin againts attacks, incl mordern securty headers.
-Requires at least: 5.0
-Tested up to: 6.9
-Requires PHP: 8.1
+Requires at least: 5.6
+Tested up to: 7.1
+Requires PHP: 8.2
 Stable tag: 1.1.0
 License: GPLv2
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
