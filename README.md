@@ -5,10 +5,10 @@ Contributors: frontiers
 Author URI: https://github.com/frontiers-wp/nodoss
 Tags: security, performance, brute force,
 Description: Lightweight Security plugin againts attacks, incl mordern securty headers.
-Requires at least: 5.6
+Requires at least: 5.9
 Tested up to: 7.1
 Requires PHP: 8.2
-Stable tag: 1.1.0
+Stable tag: 1.1.4
 License: GPLv2
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -28,6 +28,7 @@ Pre-set Security Headers:
 =x permitted cross domain policies = 
 =Strict-TransportSsecurity=
 =Content-Security-Policy: upgrade-insecure=
+=Origin-Agent-Cluster: ?1' =
 
 == Installation ==
 
@@ -65,37 +66,60 @@ Yes, XSS protection is part of this plugin.
 
 = 1.0.0: November 01, 2025 =
 * Birthday of nodoss -Beta-
+
 = 1.0.1 
 * Verfication of correctly sanitize ( wp_unslash. 
+
 = 1.0.2
 Better Headers for security
 Improved class PHP
+
 = 1.0.3
 Hide WordPress version tag.
 Add icon image.
 nodoss-banner-772-250
+
 = 1.0.4
 Debug log.
 Plugin check.
 richt click disabled.
+
 = 1.0.5
 new use wp_enqueue commands
 Data Sanitized, Escaped, and Validated
 Nonces and User Permissions Needed for Security
 PHP Syntax
+
 = 1.0.6: December 01, 2025 =
 * Birthday of nodoss
+
 = 1.0.7: Puplic release 
 Updated readme.
 Plugin icon and header 
+
 =1.0.8 Pulic release
 Updated readme
+
 = 1.0.9: April 04, 2026 =
 Update readme.txt
 Update plugin icon
 update remove wp version
+
 = 1.1.0: April 04, 2026 =
 Stable tag
+
+= 1.1.1 April 09, 2026 =
+Update assets js
+
+= 1.1.3 August 23, 2026 =
+Tested on WordPress 7.1
+Tested on PHP 8.5
+Nodoss requires PHP 8.2 (or higher)
+
+= 1.1.4 September 6, 2026 =
+Update cross Origin.
+WP Requires at least: 5.9
+Performance update
 
 == Upgrade Notice ==
 Your WordPress will be more secure.
