@@ -8,7 +8,7 @@ Description: Lightweight Security plugin againts attacks, incl mordern securty h
 Requires at least: 5.9
 Tested up to: 7.1
 Requires PHP: 8.2
-Stable tag: 1.1.4
+Stable tag: 1.1.5
 License: GPLv2
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -120,6 +120,11 @@ Nodoss requires PHP 8.2 (or higher)
 Update cross Origin.
 WP Requires at least: 5.9
 Performance update
+
+= 1.1.5 September 19, 2026 =
+Add new Limited login attems
+add new bot protection login.
+Optimized XSS protection
 
 == Upgrade Notice ==
 Your WordPress will be more secure.
