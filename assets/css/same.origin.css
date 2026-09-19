@@ -1,0 +1,27 @@
+/* Prevent visual framing (ineffective for security) */
+html {
+    display: none !important;
+}
+
+/* Block iframe rendering (CSS-only, easily bypassed) */
+iframe {
+    display: none !important;
+    visibility: hidden !important;
+}
+
+/* Disable pointer events (no right-click, but not secure) */
+body {
+    user-select: none !important;
+    -webkit-user-select: none !important;
+    -moz-user-select: none !important;
+    -ms-user-select: none !important;
+    pointer-events: none !important;
+}
+
+/* Additional properties to enhance security and usability */
+.window-opened {
+    --window-opener: null;
+}
+body {
+    --window-open: true;
+}
