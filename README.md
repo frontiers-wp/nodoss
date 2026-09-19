@@ -125,6 +125,7 @@ Performance update
 Add new Limited login attems
 add new bot protection login.
 Optimized XSS protection
+New PHP8.5 Clickjacking Protection
 
 == Upgrade Notice ==
 Your WordPress will be more secure.
