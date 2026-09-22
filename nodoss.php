@@ -163,6 +163,9 @@ function nodoss_admin_notice_activation_hook() {
     // Might involve WP_Cache, object cache, or similar
 }
 
+// Trigger the file cleanup immediately when the plugin is activated
+register_activation_hook(NODOSS_PLUGIN_FILE, 'nodoss_activation_immediate_cleanup');
+
 /**
  * Activation Message
  */
