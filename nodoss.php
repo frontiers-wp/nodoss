@@ -30,16 +30,17 @@ define( 'NODOSS_DIR_URL', plugin_dir_url( __FILE__ ) );
 define( 'NODOSS_PLUGIN_FILE', __FILE__ );
 define( 'NODOSS_PLUGIN_BASE_NAME', basename(__DIR__));
 
-// Admin Force SSL
-add_action( 'admin_init', 'nodoss_force_ssl' );
-function nodoss_force_ssl() {
-    if ( current_user_can( 'FORCE_SSL_ADMIN' ) )
-        define( 'FORCE_SSL_ADMIN', 1 );
-}
-
 // Define constant with current version
 if (! defined( 'NODOSS_VERSION' ) ) {
     define( 'NODOSS_VERSION', '1.1.5' );
+}
+
+// Admin Force SSL (Enforces SSL on administrative requests globally)
+add_action( 'admin_init', 'nodoss_force_ssl' );
+function nodoss_force_ssl() {
+    if ( ! defined( 'FORCE_SSL_ADMIN' ) ) {
+        define( 'FORCE_SSL_ADMIN', true );
+    }
 }
 
 /** Load Nodoss */
