@@ -35,3 +35,7 @@ require_once plugin_dir_path(dirname(__FILE__)) . 'inc/class-wp-version.php';
 /** Limited WP Login */
 require_once plugin_dir_path(dirname(__FILE__)) . 'inc/class-wp-limited-admin.php';
 require_once plugin_dir_path(dirname(__FILE__)) . 'inc/class-wp-login.php';
+
+/** Nodoss Core Update Cleaner  */
+require_once plugin_dir_path(dirname(__FILE__)) . 'inc/update/core-update-cleaner.php';
+
