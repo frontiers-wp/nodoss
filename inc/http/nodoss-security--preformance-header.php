@@ -37,6 +37,13 @@ function nodoss_security_register_settings() {
         'default'           => '0',
     ));
 
+    // --- Comment Form Settings Layer (New Integration Block) ---
+	register_setting( 'nodoss_settings_group', 'nodoss_security_enable_comment_csrf', array(
+		'type'              => 'string',
+		'sanitize_callback' => 'sanitize_key',
+		'default'           => '0',
+	));
+
     // --- Performance & API Settings (Explicitly Sanitize Interval Int) ---
     register_setting( 'nodoss_settings_group', 'nodoss_security_aj_heartbeat_interval', array(
         'type'              => 'integer',
@@ -91,6 +98,15 @@ function nodoss_security_register_settings() {
         'nodoss_main_section'
     );
 
+    // --- New Form Field Layer ---
+	add_settings_field(
+		'nodoss_enable_comment_csrf_field',
+		'Form CSRF Protection',
+		'nodoss_comment_csrf_toggle_html',
+		'nodoss-settings',
+		'nodoss_main_section'
+	);
+
     // --- Section 2 Fields: Performance ---
     add_settings_field(
         'nodoss_aj_heartbeat_interval_field',
@@ -107,13 +123,13 @@ add_action( 'admin_init', 'nodoss_security_register_settings' );
  * Add Settings Page to WordPress Menu
  */
 function nodoss_security_add_admin_menu() {
-    add_options_page(
-        'NoDoss Security Settings',
-        'NoDoss Security',
-        'manage_options',
-        'nodoss-settings',
-        'nodoss_security_options_page_html'
-    );
+	add_options_page(
+		'NoDoss Security Settings',
+		'NoDoss Security',
+		'manage_options',
+		'nodoss-settings',
+		'nodoss_security_options_page_html'
+	);
 }
 add_action( 'admin_menu', 'nodoss_security_add_admin_menu' );
 
@@ -148,6 +164,10 @@ function nodoss_hsts_toggle_html() {
     nodoss_security_render_toggle_element( 'nodoss_security_sub_hsts', 'Enforces max-age=63072000 HSTS protection with subdomains and preload parameters.' );
 }
 
+function nodoss_comment_csrf_toggle_html() {
+	nodoss_security_render_toggle_element( 'nodoss_security_enable_comment_csrf', 'Enforces unique cryptographic token signature layers on frontend comment forms to completely eliminate bot spam forgery loops.' );
+}
+
 function nodoss_heartbeat_input_html() {
     $interval = get_option( 'nodoss_security_aj_heartbeat_interval', 360 );
     ?>
@@ -156,65 +176,67 @@ function nodoss_heartbeat_input_html() {
     <?php
 }
 
+
+
 /**
- * 4. Render Main Admin Setting Page with Layout Styles
+ * Render Main Admin Setting Page with Layout Styles
  */
 function nodoss_security_options_page_html() {
-    if ( ! current_user_can( 'manage_options' ) ) {
-        return;
-    }
+	if ( ! current_user_can( 'manage_options' ) ) {
+		return;
+	}
 
-    $master_on   = ( get_option( 'nodoss_security_enable_headers', '0' ) === '1' );
-    $system_live = false;
+	$master_on   = ( get_option( 'nodoss_security_enable_headers', '0' ) === '1' );
+	$system_live = false;
 
-    if ( $master_on ) {
-        $response = wp_remote_head( home_url( '/' ), array( 'sslverify' => false, 'timeout' => 3 ) );
-        if ( ! is_wp_error( $response ) ) {
-            $headers = wp_remote_retrieve_headers( $response );
-            if ( isset( $headers['referrer-policy'] ) || isset( $headers['x-content-type-options'] ) || isset( $headers['origin-agent-cluster'] ) ) {
-                $system_live = true;
-            }
-        }
-    }
-    ?>
-    <div class="wrap">
-        <h1><?php echo esc_html( get_admin_page_title() ); ?></h1>
-        <hr class="wp-header-end">
+	if ( $master_on ) {
+		$response = wp_remote_head( home_url( '/' ), array( 'sslverify' => false, 'timeout' => 3 ) );
+		if ( ! is_wp_error( $response ) ) {
+			$headers = wp_remote_retrieve_headers( $response );
+			if ( isset( $headers['referrer-policy'] ) || isset( $headers['x-content-type-options'] ) || isset( $headers['origin-agent-cluster'] ) ) {
+				$system_live = true;
+			}
+		}
+	}
+	?>
+	<div class="wrap">
+		<h1><?php echo esc_html( get_admin_page_title() ); ?></h1>
+		<hr class="wp-header-end">
 
-        <style>
-            /* Base Switch Architecture */
-            .nodoss-switch { position: relative; display: inline-block; width: 52px; height: 28px; vertical-align: middle; }
-            .nodoss-switch input { opacity: 0; width: 0; height: 0; }
-            
-            /* High-Contrast Inactive State */
-            .nodoss-slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #8c8c8c; transition: .25s; border-radius: 28px; box-shadow: inset 0 1px 3px rgba(0,0,0,0.2); }
-            .nodoss-slider:before { position: absolute; content: ""; height: 20px; width: 20px; left: 4px; bottom: 4px; background-color: #ffffff; transition: .25s; border-radius: 50%; box-shadow: 0 2px 4px rgba(0,0,0,0.3); }
-            
-            /* Vibrant Sub-Header Toggle (Electric Blue) */
-            input:checked + .nodoss-slider { background-color: #0066cc; }
-            input:checked + .nodoss-slider:before { transform: translateX(24px); }
-            
-            /* High-Visibility Master Toggle (Emerald Green) */
-            .nodoss-master-switch input:checked + .nodoss-slider { background-color: #00a32a; }
-            
-            /* Inputs and Elements */
-            .nodoss-num-input { padding: 4px 8px; font-size: 14px; border: 1px solid #8c8c8c; border-radius: 4px; line-height: 1.5; height: 28px; width: 70px !important; text-align: center; font-weight: 600; vertical-align: middle; }
-            .nodoss-desc { display: inline-block; margin-left: 14px; vertical-align: middle; color: #1d2327; font-weight: 500; font-size: 13px; }
-            .form-table th { width: 240px; font-weight: 600; color: #1d2327; padding: 20px 10px 20px 0; }
-            .form-table td { padding: 15px 10px; }
-            
-            /* Titles & Sections */
-            .wp-core-ui .wrap h2 { font-size: 1.3em; margin: 1.5em 0 0.5em; border-bottom: 1px solid #ccd0d4; padding-bottom: 8px; color: #1d2327; }
+		<style>
+			/* Base Switch Architecture */
+			.nodoss-switch { position: relative; display: inline-block; width: 52px; height: 28px; vertical-align: middle; }
+			.nodoss-switch input { opacity: 0; width: 0; height: 0; }
+			
+			/* High-Contrast Inactive State */
+			.nodoss-slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #8c8c8c; transition: .25s; border-radius: 28px; box-shadow: inset 0 1px 3px rgba(0,0,0,0.2); }
+			.nodoss-slider:before { position: absolute; content: ""; height: 20px; width: 20px; left: 4px; bottom: 4px; background-color: #ffffff; transition: .25s; border-radius: 50%; box-shadow: 0 2px 4px rgba(0,0,0,0.3); }
+			
+			/* Vibrant Sub-Header Toggle (Electric Blue) */
+			input:checked + .nodoss-slider { background-color: #0066cc; }
+			input:checked + .nodoss-slider:before { transform: translateX(24px); }
+			
+			/* High-Visibility Master Toggle (Emerald Green) */
+			.nodoss-master-switch input:checked + .nodoss-slider { background-color: #00a32a; }
+			
+			/* Inputs and Elements */
+			.nodoss-num-input { padding: 4px 8px; font-size: 14px; border: 1px solid #8c8c8c; border-radius: 4px; line-height: 1.5; height: 28px; width: 70px !important; text-align: center; font-weight: 600; vertical-align: middle; }
+			.nodoss-desc { display: inline-block; margin-left: 14px; vertical-align: middle; color: #1d2327; font-weight: 500; font-size: 13px; }
+			.form-table th { width: 240px; font-weight: 600; color: #1d2327; padding: 20px 10px 20px 0; }
+			.form-table td { padding: 15px 10px; }
+			
+			/* Titles & Sections */
+			.wp-core-ui .wrap h2 { font-size: 1.3em; margin: 1.5em 0 0.5em; border-bottom: 1px solid #ccd0d4; padding-bottom: 8px; color: #1d2327; }
 
-            /* Layout Containers */
-            .nodoss-status-card { background: #fff; padding: 15px 20px; margin: 20px 0 10px; border-left: 4px solid #ccd0d4; border-radius: 4px; max-width: 800px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); display: flex; align-items: center; }
-            .nodoss-status-card.active { border-left-color: #00a32a; }
-            .nodoss-status-card.inactive { border-left-color: #d63638; }
-            .nodoss-badge { display: inline-block; padding: 5px 12px; font-weight: bold; border-radius: 12px; font-size: 11px; text-transform: uppercase; margin-right: 15px; color: #fff; }
-            .nodoss-badge.active { background: #00a32a; }
-            .nodoss-badge.inactive { background: #d63638; }
-            .nodoss-notice-box { margin-top: 15px; max-width: 800px; background: #fff8e5; border-left: 4px solid #dba617; padding: 12px 18px; border-radius: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); font-size: 13px; color: #3c434a; }
-        </style>
+			/* Layout Containers */
+			.nodoss-status-card { background: #fff; padding: 15px 20px; margin: 20px 0 10px; border-left: 4px solid #ccd0d4; border-radius: 4px; max-width: 800px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); display: flex; align-items: center; }
+			.nodoss-status-card.active { border-left-color: #00a32a; }
+			.nodoss-status-card.inactive { border-left-color: #d63638; }
+			.nodoss-badge { display: inline-block; padding: 5px 12px; font-weight: bold; border-radius: 12px; font-size: 11px; text-transform: uppercase; margin-right: 15px; color: #fff; }
+			.nodoss-badge.active { background: #00a32a; }
+			.nodoss-badge.inactive { background: #d63638; }
+			.nodoss-notice-box { margin-top: 15px; max-width: 800px; background: #fff8e5; border-left: 4px solid #dba617; padding: 12px 18px; border-radius: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); font-size: 13px; color: #3c434a; }
+		</style>
 
         <div class="nodoss-status-card <?php echo $system_live ? 'active' : 'inactive'; ?>">
             <?php if ( $system_live ) : ?>
