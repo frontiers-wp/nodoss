@@ -35,14 +35,17 @@ Pre-set Security Headers:
 1. Upload 'nodoss.zip' to the '/wp-content/plugins/' directory
 2. Extract the Plugin to a `nodoss` Folder
 3. Activate the plugin through the 'Plugins' menu in WordPress
-4. General Settings – Heartbeat <15> <240> Interval seconds 
+5. General Settings – Heartbeat <15> <360> Interval seconds
+6. Default Define('NODOSS_ENABLE_HTTPS_CHECK', true);  false = DISABLED
+7. Bypass Lockout wp-login: define('NODOSS_BYPASS_LOGIN_LOCKOUT', true);
+8. White list your admin IP : define('NODOSS_IP_WHITELIST', '86.01.168.00' );  / example 
 
 
 1. Go to `Plugins` in the Admin menu
 2. Click on the button `Add new`
 3. Search for nodoss` and click 'Install Now' or click on the `upload` link to upload `nodoss.zip`
 4. Click on `Activate plugin`
-5. General Settings – Heartbeat <15> <240> Interval seconds
+5. General Settings – Heartbeat <15> <360> Interval seconds
 6. Default Define('NODOSS_ENABLE_HTTPS_CHECK', true);  false = DISABLED
 7. Bypass Lockout wp-login: define('NODOSS_BYPASS_LOGIN_LOCKOUT', true);
 8. White list your admin IP : define('NODOSS_IP_WHITELIST', '86.01.168.00' );  / example 
