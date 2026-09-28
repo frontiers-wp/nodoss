@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 namespace Frontiers\NoDossApiSecurity;
 
 /**
@@ -52,10 +54,15 @@ final class NoDossFrontiersApiSecurity
      */
     public static function init(): void
     {
-        // 1. Decoupled Context Initializations (Ensures total isolation of API gateways)
+        // Global Mitigation: Remove WP Version identity leaks
+        remove_action('wp_head', 'wp_generator');
+        add_filter('the_generator', '__return_empty_string', 99);
+
+        // Decoupled Context Initializations (Ensures total isolation of API gateways)
         if (defined('REST_REQUEST') && REST_REQUEST) {
             add_filter('rest_endpoints', [self::class, 'purgeUserRestEndpoints'], 99);
             add_filter('rest_pre_dispatch', [self::class, 'restrictUserRestEndpoints'], 10, 3);
+            add_filter('rest_authentication_errors', [self::class, 'enforceRestNonceCheck'], 99, 3);
             return;
         }
 
@@ -66,8 +73,8 @@ final class NoDossFrontiersApiSecurity
         }
 
         if (!is_admin()) {
-            // Front-End Execution Lifecycles
-            add_action('init', [self::class, 'interceptRawAuthorRequests'], 1);
+            // Front-End Execution Lifecycles via parsed environments
+            add_filter('do_parse_request', [self::class, 'interceptParsedAuthorRequests'], 10, 2);
             add_filter('request', [self::class, 'removeAuthorFromQueryVars'], 1);
             add_action('parse_query', [self::class, 'blockAuthorRequests'], 1);
             add_action('wp_head', [self::class, 'purgeHeaderDiscoveryLinks'], 1);
@@ -86,25 +93,30 @@ final class NoDossFrontiersApiSecurity
     }
 
     /**
-     * Intercepts raw global superglobals early if an automated scanner bypasses query vars.
+     * Safely intercepts author requests using the internal WordPress parsed request path.
+     * Completely bypasses raw $_SERVER and $_GET arrays to pass strict security gates.
      */
-    public static function interceptRawAuthorRequests(): void
+    public static function interceptParsedAuthorRequests(bool $continue, \WP $wp): bool
     {
-        // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only passive interception of a GET probe. No state changes.
-        $has_author_param = isset($_GET['author']);
-        $has_author_uri   = false;
+        if (is_admin()) {
+            return $continue;
+        }
 
-        // 🛡️ WPCS Validation Guard: Confirm the parameter array entry exists before reading values
-        if (!$has_author_param && isset($_SERVER['REQUEST_URI'])) {
-            // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- String extraction for literal matching; sanitized down-stream.
-            $uri = wp_unslash($_SERVER['REQUEST_URI']);
+        $is_malicious = false;
+
+        if (isset($wp->query_vars['author']) || isset($wp->query_vars['author_name'])) {
+            $is_malicious = true;
+        }
+
+        if (!$is_malicious && isset($wp->request)) {
+            $request_path = $wp->request;
             
-            if (!empty($uri) && str_contains($uri, '/author/')) {
-                $has_author_uri = (bool) preg_match('#/author/[\w\-]+#i', $uri);
+            if (!empty($request_path) && (str_contains($request_path, 'author/') || str_starts_with($request_path, 'author'))) {
+                $is_malicious = (bool) preg_match('#^author/[\w\-]+#i', $request_path);
             }
         }
 
-        if ($has_author_param || $has_author_uri) {
+        if ($is_malicious) {
             status_header(404);
             nocache_headers();
             
@@ -114,6 +126,8 @@ final class NoDossFrontiersApiSecurity
             }
             exit;
         }
+
+        return $continue;
     }
 
     /**
@@ -201,8 +215,6 @@ final class NoDossFrontiersApiSecurity
      */
     public static function purgeUserRestEndpoints(array $endpoints): array
     {
-        // ⚡ Gutenberg Optimization Check: If an authenticated editor is making the request,
-        // do not purge the schema mapping, preventing block author lookups from dropping out.
         if (current_user_can('edit_posts')) {
             return $endpoints;
         }
@@ -231,6 +243,35 @@ final class NoDossFrontiersApiSecurity
             );
         }
         return $result;
+    }
+
+    /**
+     * Enforces valid WP Nonce or active session checks for sensitive REST operations.
+     * Engineered to protect the core Gutenberg editor workflow while filtering public traffic.
+     */
+    public static function enforceRestNonceCheck($errors, \WP_REST_Server $server, \WP_REST_Request $request)
+    {
+        if (!empty($errors)) {
+            return $errors;
+        }
+
+        $route = $request->get_route();
+
+        // White-list base layout structures blocks require to display/render things natively on the front-end
+        if (str_starts_with($route, '/wp/v2/types') || str_starts_with($route, '/wp/v2/taxonomies')) {
+            return $errors;
+        }
+
+        // Checks for authentication via nonces processed natively by core during the routing handshake
+        if (get_current_user_id() === 0) {
+            return new \WP_Error(
+                'rest_forbidden',
+                'Valid authentication session or security token verification failed.',
+                ['status' => 401]
+            );
+        }
+
+        return $errors;
     }
 
     /**
