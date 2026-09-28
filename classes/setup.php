@@ -2,8 +2,8 @@
 /**
  * @package       NoDoss
  * @author        Edwin Bekedam
- * @license       gplv2
- * @version       1.1.5
+ * @license       GPLv3
+ * @version       1.1.6
  *
  * @wordpress-plugin
  */

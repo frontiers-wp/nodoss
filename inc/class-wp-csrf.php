@@ -63,7 +63,7 @@ class NodossWPFtNoDossCsrf {
 	 * @return array The original validation array on success, halts execution via wp_die on breach.
 	 */
 	public function nodoss_verify_comment_csrf( array $commentdata ) {
-		// FIX: Instantly bypass validation restrictions if the feature switch option is set to off
+		// Instantly bypass validation restrictions if the feature switch option is set to off
 		if ( get_option( 'nodoss_security_enable_comment_csrf', '0' ) !== '1' ) {
 			return $commentdata;
 		}

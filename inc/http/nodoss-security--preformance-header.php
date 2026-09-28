@@ -1,9 +1,8 @@
 <?php
 /**
- * NoDoss Security
  * Advanced engine to manage isolation, content protection, transport security, and Heartbeat performance filters with Eventbrite checkout safety.
  * Author:      Edwin Bekedam
- * License:     GPL2
+ * License:     GPLv3
  * Text Domain: nodoss
  */
 
@@ -165,7 +164,7 @@ function nodoss_hsts_toggle_html() {
 }
 
 function nodoss_comment_csrf_toggle_html() {
-	nodoss_security_render_toggle_element( 'nodoss_security_enable_comment_csrf', 'Enforces unique cryptographic token signature layers on frontend comment forms to completely eliminate bot spam forgery loops.' );
+	nodoss_security_render_toggle_element( 'nodoss_security_enable_comment_csrf', 'Enforces unique cryptographic token signature layers on frontend.' );
 }
 
 function nodoss_heartbeat_input_html() {

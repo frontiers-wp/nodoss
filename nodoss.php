@@ -2,23 +2,23 @@
 /**
  * @package       NoDoss
  * @author        Edwin Bekedam
- * @license       gplv2
- * @version       1.1.5
+ * @license       gplv3
+ * @version       1.1.6
  *
  * @wordpress-plugin
  * Plugin Name: NoDoss
  * Plugin URI:  https://wordpress.org/plugins/nodoss
  * Description: Lightweight Security plugin againts attacks, incl mordern securty headers.
- * Version:     1.1.5
+ * Version:     1.1.6
  * Author:      Edwin Bekedam
  * Author URI:  https://github.com/frontiers-wp/nodoss
  * Text Domain: nodoss
  * Domain Path: /languages
- * License:     GPLv2
- * License URI: https://www.gnu.org/licenses/gpl-2.0.html
  *
+ * License:     GPLv3
+ * License URI: https://www.gnu.org/licenses/gpl-3.0.html
  * You should have received a copy of the GNU General Public License
- * along with NoDoss. If not, see <https://www.gnu.org/licenses/gpl-2.0.html/>.
+ * along with NoDoss. If not, see <https://www.gnu.org/licenses/gpl-3.0.html/>.
  */
 
 // If this file is called directly, abort.
@@ -32,12 +32,12 @@ define( 'NODOSS_PLUGIN_BASE_NAME', basename(__DIR__));
 
 // Define constant with current version
 if (! defined( 'NODOSS_VERSION' ) ) {
-    define( 'NODOSS_VERSION', '1.1.5' );
+    define( 'NODOSS_VERSION', '1.1.6' );
 }
 
 // Admin Force SSL (Enforces SSL on administrative requests globally)
-add_action( 'admin_init', 'nodoss_force_ssl' );
-function nodoss_force_ssl() {
+add_action( 'admin_init', 'nodoss_secure_force_ssl' );
+function nodoss_secure_force_ssl() {
     if ( ! defined( 'FORCE_SSL_ADMIN' ) ) {
         define( 'FORCE_SSL_ADMIN', true );
     }
