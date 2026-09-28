@@ -36,7 +36,8 @@ Pre-set Security Headers:
 2. Extract the Plugin to a `nodoss` Folder
 3. Activate the plugin through the 'Plugins' menu in WordPress
 5. General Settings – Heartbeat <15> <360> Interval seconds
-6. Default Define('NODOSS_ENABLE_HTTPS_CHECK', true);  false = DISABLED
+6. Debugging Override: To temporarily halt the structural HTTPS routing engine during localized staging tasks, add "define('NODOSS_ENABLE_HTTPS_CHECK', false); " 
+ directly to your wp-config.
 7. Bypass Lockout wp-login: define('NODOSS_BYPASS_LOGIN_LOCKOUT', true);
 8. White list your admin IP : define('NODOSS_IP_WHITELIST', '86.01.168.00' );  / example 
 
