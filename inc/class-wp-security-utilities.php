@@ -65,8 +65,10 @@ class NoDossSecurityUtilities
         ]);
     }
 
-    #[\Deprecated(message: "Use NodossConfermCheckHeaders instead")]
-    public static function NodossmodXSSHeaders(): void
+    /**
+     * Injects legacy headers that cannot be safely processed via array filters.
+     */
+    public static function NodossInjectLegacyHeader(): void
     {
         if (is_admin()) {
             header('X-XSS-Protection: 0');
@@ -160,7 +162,8 @@ class NoDossSecurityUtilities
 
         // Register platform-wide filter adjustments and asset wrappers
         add_filter('wp_headers', [self::class, 'NodossConfermCheckHeaders']);
-        add_action('admin_init', [self::class, 'NodossmodXSSHeaders']);
+        // Inject legacy headers safely without array filter limitations
+        add_action('send_headers', [self::class, 'NodossInjectLegacyHeader']);
         
         // Conflict Mitigation: Prevent client script injections inside the interactive theme customizer preview
         if ( ! is_customize_preview() ) {
