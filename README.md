@@ -34,17 +34,6 @@ Engineered for absolute runtime optimization and bulletproof perimeter protectio
 * HSTS (Strict-Transport-Security) & Automated HTTPS Insecure Upgrades
 * Isolated Engine Verification via Origin-Agent-Cluster Signaling
 
-### Pre-set avalible Security Headers: 
-
-=cross origin policy=
-=cross origin resource sharing=
-=referrer-policy=
-=x content-type-options =
-=x permitted cross domain policies = 
-=Strict-TransportSsecurity=
-=Content-Security-Policy: upgrade-insecure=
-=Origin-Agent-Cluster: ?1' =
-
 == Installation ==
 
 1. Upload 'nodoss.zip' to the '/wp-content/plugins/' directory
