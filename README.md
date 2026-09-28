@@ -8,7 +8,7 @@ Description: Lightweight Security plugin againts attacks, incl mordern securty h
 Requires at least: 5.9
 Tested up to: 7.1
 Requires PHP: 8.2
-Stable tag: 1.1.5
+Stable tag: 1.1.6
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -134,7 +134,17 @@ Performance update
 Add new Limited login attems
 add new bot protection login.
 Optimized XSS protection
-New PHP8.5 Clickjacking Protection
+
+= 1.1.5 September 19, 2026 =
+NEW Limited login and attemsbot protection login.
+Hardening optimized XSS protection
+NEW PHP8.5 Optimized Clickjacking Protection
+
+= 1.1.6 September 28, 2026 =
+Gateway Isolation & API Compliance Overhaul
+Zero-Allocation Context Hardening & WPCS Alignment
+Next-Gen Request Interception & Gutenberg Sandbox Stability
+Strict Runtime De-allocation & REST Firewall Refinement
 
 == Upgrade Notice ==
 Your WordPress will be more secure.
