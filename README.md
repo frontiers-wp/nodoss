@@ -24,7 +24,7 @@ Engineered for absolute runtime optimization and bulletproof perimeter protectio
 * Bruteforce Attack Interception & Malicious Auth-Loop Defenses.
 * Advanced Multi-Layered Script Jacking & DOM-based XSS Mitigation.
 * Strict Runtime Reflection & Dangerous RPC Method Purging.
-* Iframe Security Blueprint Secure Outbound Navigation (target="_blank") 
+* Iframe & Secure Outbound Navigation (target="_blank") Isolation Matrix.
 
 #### Enterprise Security Policy Headers Deployed:
 * Cross-Origin Opener/Embedder/Resource Policies (COOP, COEP, CORP)
