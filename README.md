@@ -13,7 +13,6 @@ License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
 An ultra-lightweight, zero-allocation security and gateway defense engine for WordPress. 
-Engineered for absolute runtime optimization and bulletproof perimeter protection against automated botnets, brute-force exploits, script injection vectors, and Cross-Site Request Forgery (CSRF).
 
 == Description ==
 
