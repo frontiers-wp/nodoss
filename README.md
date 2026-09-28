@@ -50,7 +50,7 @@ Pre-set Security Headers:
 6. Debugging Override: To temporarily halt the structural HTTPS routing engine during localized staging tasks, add "define('NODOSS_ENABLE_HTTPS_CHECK', false); " 
  directly to your wp-config.
 8. Bypass Lockout wp-login: define('NODOSS_BYPASS_LOGIN_LOCKOUT', true);
-9. White list your admin IP : define('NODOSS_IP_WHITELIST', '86.01.168.00' );  / example "withlist your IP" 
+9. White list your admin IP : define('NODOSS_IP_WHITELIST', '86.01.168.00' );  // example "withlist your IP" 
 
 
 == Frequently Asked Questions ==
