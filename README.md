@@ -9,8 +9,8 @@ Requires at least: 5.9
 Tested up to: 7.1
 Requires PHP: 8.2
 Stable tag: 1.1.5
-License: GPLv2
-License URI: https://www.gnu.org/licenses/gpl-2.0.html
+License: GPLv3
+License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
 Stop bots, pingbacks, protection againts brute force hacking, script jacking, Iframe XSS attacks, CSRF Proctection, Insecure requests,
 
