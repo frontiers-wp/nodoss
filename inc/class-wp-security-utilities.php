@@ -178,6 +178,11 @@ class NoDossSecurityUtilities
      * with context-aware conflict bypasses.
      */
     public static function NodosssanitizeRestPayloads($result, $server, $request) {
+        // Ensure we are working with a valid request object structure
+        if ( ! is_a( $request, 'WP_REST_Request' ) ) {
+            return $result;
+        }
+
         $route = $request->get_route();
 
         /**
@@ -197,21 +202,31 @@ class NoDossSecurityUtilities
             }
         }
 
-        // Conflict Mitigation: Ignore strict public sanitization loops if a verified Administrator is updating things
-        if (current_user_can('manage_options')) {
-            return $result;
+        // Conflict Mitigation: Safely verify user capability only if user environment is loaded
+        if (function_exists('get_current_user_id') && get_current_user_id() !== 0) {
+            if (current_user_can('manage_options')) {
+                return $result;
+            }
         }
 
-        // Standard request processing for public REST data fields
-        $params = $request->get_params();
-        if (!empty($params)) {
-            array_walk_recursive($params, function(&$value) {
-                if (is_string($value)) {
-                    $value = self::sanitizeStringInput($value);
+        // Processing individual REST parameter pools explicitly to persist data safely
+        foreach (['body_params', 'query_params', 'default_params'] as $param_type) {
+            $getter = 'get_' . $param_type;
+            $setter = 'set_' . $param_type;
+
+            if (method_exists($request, $getter) && method_exists($request, $setter)) {
+                $params = $request->$getter();
+                if (!empty($params) && is_array($params)) {
+                    array_walk_recursive($params, function(&$value) {
+                        if (is_string($value)) {
+                            $value = self::sanitizeStringInput($value);
+                        }
+                    });
+                    $request->$setter($params);
                 }
-            });
-            $request->set_params($params);
+            }
         }
+        
         return $result;
     }
 
