@@ -1,4 +1,4 @@
-cat << 'EOF' > .github/workflows/deploy.yml
+cat << 'EOF' > .github/workflows/deploy-to-wordpress-org.yml
 name: Deploy NoDoss to WordPress.org SVN
 
 on:
@@ -21,3 +21,4 @@ jobs:
           SVN_USERNAME: ${{ secrets.SVN_USERNAME }}
           SVN_PASSWORD: ${{ secrets.SVN_PASSWORD }}
 EOF
+
