@@ -1,0 +1,21 @@
+name: Deploy NoDoss to WordPress.org SVN
+
+on:
+  push:
+    # Triggers the workflow automatically whenever a new version tag (e.g., v1.1.6) is published
+    tags:
+      - 'v*'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: WordPress.org Plugin Deploy
+        uses: 10up/action-wordpress-plugin-deploy@stable
+        env:
+          SVN_USERNAME: ${{ secrets.SVN_USERNAME }}
+          SVN_PASSWORD: ${{ secrets.SVN_PASSWORD }}
+          SLUG: nodoss
