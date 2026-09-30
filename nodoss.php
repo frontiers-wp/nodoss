@@ -3,13 +3,13 @@
  * @package       NoDoss
  * @author        Edwin Bekedam
  * @license       gplv3
- * @version       1.1.6
+ * @version       1.1.6.1
  *
  * @wordpress-plugin
  * Plugin Name: NoDoss
  * Plugin URI:  https://wordpress.org/plugins/nodoss
  * Description: An ultra-lightweight, zero-allocation security and gateway defense engine for WordPress. 
- * Version:     1.1.6
+ * Version:     1.1.6.1
  * Author:      Edwin Bekedam
  * Author URI:  https://github.com/frontiers-wp/nodoss
  * Text Domain: nodoss
@@ -32,7 +32,7 @@ define( 'NODOSS_PLUGIN_BASE_NAME', basename(__DIR__));
 
 // Define constant with current version
 if (! defined( 'NODOSS_VERSION' ) ) {
-    define( 'NODOSS_VERSION', '1.1.6' );
+    define( 'NODOSS_VERSION', '1.1.6.1' );
 }
 
 // Admin Force SSL (Enforces SSL on administrative requests globally)

@@ -8,7 +8,7 @@ Description: Lightweight Security plugin againts attacks, incl mordern securty h
 Requires at least: 5.9
 Tested up to: 7.1
 Requires PHP: 8.2
-Stable tag: 1.1.6
+Stable tag: 1.1.6.1
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
