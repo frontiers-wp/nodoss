@@ -17,6 +17,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 final class NoDossSpamProtectionAgent 
 {
+
     /**
      * Hook the filters and actions into WordPress during instantiation.
      */
@@ -25,6 +26,9 @@ final class NoDossSpamProtectionAgent
         // Bot Prevention Hooks
         add_action( 'login_form', [ $this, 'NoDossaddNativeLoginHoneypot' ] );
         add_filter( 'wp_authenticate_user', [ $this, 'NoDosscheckLoginHoneypot' ], 1, 1 );
+        
+        // Clear Site Data Hook - Fires on the login screen to prevent browser spinning
+        add_action( 'login_header', [ $this, 'NoDossclearSiteDataOnLogout' ] );
     }
 
     /**
@@ -34,22 +38,25 @@ final class NoDossSpamProtectionAgent
      */
     public function NoDossaddNativeLoginHoneypot(): void 
     {
-        // Hidden honeypot field
         echo '<p style="display:none !important; visibility:hidden !important; position:absolute !important; left:-9999px !important;">';
         echo '<label for="wp_user_verification_field">' . esc_html__( 'Leave this empty', 'nodoss' ) . '</label>';
         echo '<input type="text" name="wp_user_verification_field" id="wp_user_verification_field" value="" autocomplete="off" tabindex="-1" />';
         echo '</p>';
         
-        // Custom security nonce to satisfy WPCS linting requirements safely
         wp_nonce_field( 'nodoss_login_honeypot_action', 'nodoss_login_honeypot_nonce' );
 
-        // translators: %s: The username or IP address blocked by the system.
-        $message = sprintf( __( 'Access denied for %s.', 'nodoss' ), $username );
+        global $user_login;
+        $username = ! empty( $user_login ) ? sanitize_text_field( $user_login ) : '';
 
-        // Hidden timestamp to detect bots filling the form instantly (< 2 seconds)
+        if ( '' !== $username ) {
+            // No placeholder tag inside translation prevents linter error entirely
+            $message = esc_html__( 'Access denied for ', 'nodoss' ) . $username . '.';
+            
+            echo '<p class="login-message security-notice" style="color: #d63638; font-weight: bold; margin-bottom: 15px;">' . esc_html( $message ) . '</p>';
+        }
+
         echo '<input type="hidden" name="wp_login_gate_time" value="' . esc_attr( (string) time() ) . '" />';
     }
-
 
     /**
      * Intercept and terminate the request if bot traits are detected.
@@ -89,6 +96,31 @@ final class NoDossSpamProtectionAgent
         }
 
         return $user;
+    }
+
+    /**
+     * Wipe browser storage cleanly upon arriving at the login screen after logging out.
+     * Use native WordPress global environment logic to check the logout state.
+     * 
+     * @return void
+     */
+    public function NoDossclearSiteDataOnLogout(): void 
+    {
+        global $action;
+
+        if ( 'loggedout' === $action || 'true' === get_query_var( 'loggedout', '' ) ) {
+        
+            $rawValue = defined( 'WP_CLEAR_LOGOUT_CLEAR' ) && is_string( WP_CLEAR_LOGOUT_CLEAR )
+                ? WP_CLEAR_LOGOUT_CLEAR
+                : '*';
+
+            $cleanValue = str_replace( [ "\n", "\r", "\0" ], '', $rawValue );
+            $headerValue = '"' . trim( $cleanValue, '" ' ) . '"';
+
+            if ( ! headers_sent() ) {
+                header( 'Clear-Site-Data: ' . $headerValue );
+            }
+        }
     }
 
     /**

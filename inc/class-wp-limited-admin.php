@@ -90,35 +90,25 @@ final class NoDossLoginProtectionManager
         return $allow;
     }
 
-
     /**
      * Renders a critical administration notice when the brute force block engine is bypassed.
      */
     public function NoDossrenderEmergencyBypassWarning(): void 
     {
-        // Guard access checking to ensure only privileged administrators view structural security messages
         if ( ! current_user_can( 'manage_options' ) ) {
             return;
         }
 
-        $allowed_html = [
-            'div'    => [
-                'class' => [],
-            ],
-            'p'      => [],
-            'strong' => [],
-            'code'   => [],
-        ];
-
-        /* translators: 1: Security warning title, 2: First part of the warning message text, 3: Concluding instruction text. */
-        $warning_message = sprintf(
-            '<div class="notice notice-error"><p><strong>%1$s:</strong> %2$s <code>define(\'NODOSS_BYPASS_LOGIN_LOCKOUT\', true);</code> %3$s</p></div>',
-            esc_html__( 'NODOSS SECURITY WARNING', 'nodoss' ),
-            esc_html__( 'The Login Brute-Force Protection engine is currently disabled because the emergency unlock constant', 'nodoss' ),
-            esc_html__( 'is left active in your wp-config.php file. Remove this constant immediately to restore protection.', 'nodoss' )
-        );
-
-        echo wp_kses( $warning_message, $allowed_html );
+        ?>
+        <div class="notice notice-error">
+            <p>
+                <strong><?php echo esc_html__( 'NODOSS SECURITY WARNING', 'nodoss' ); ?>:</strong>
+                <?php echo esc_html__( 'The Login Brute-Force Protection engine is currently disabled because the emergency unlock constant', 'nodoss' ); ?>
+                <code>define('NODOSS_BYPASS_LOGIN_LOCKOUT', true);</code>
+                <?php echo esc_html__( 'is left active in your wp-config.php file. Remove this constant immediately to restore protection.', 'nodoss' ); ?>
+            </p>
+        </div>
+        <?php
     }
 
     /**
@@ -126,7 +116,6 @@ final class NoDossLoginProtectionManager
      */
     private function isBypassedRestRoute(): bool 
     {
-        // Strict WPCS compliant line-level read
         $rawUri = isset( $_SERVER['REQUEST_URI'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REQUEST_URI'] ) ) : '';
         if ( $rawUri === '' ) {
             return false;
@@ -140,14 +129,13 @@ final class NoDossLoginProtectionManager
         return in_array( $currentUri, self::BYPASS_REST_ROUTES, true );
     }
 
-
     /**
      * Evaluates if a given IP address strictly matches the external wp-config global constant
      * or satisfies custom plugin programmatic filters.
      */
     private function isClientIpWhitelisted( string $clientIp ): bool 
     {
-        // 1. Dynamic integration explicitly limited to your wp-config.php structural target
+        // Dynamic integration explicitly limited to your wp-config.php structural target
         if ( defined( 'NODOSS_IP_WHITELIST' ) ) {
             $configValue = (string) NODOSS_IP_WHITELIST;
             $whitelistedIps = array_map( 'trim', explode( ',', $configValue ) );
@@ -164,7 +152,6 @@ final class NoDossLoginProtectionManager
 
         return false;
     }
-
 
     /**
      * Prevents login processing if the user's IP address has passed the failure threshold.
@@ -189,25 +176,17 @@ final class NoDossLoginProtectionManager
         $attempts      = get_transient( $transientName );
 
         if ( false !== $attempts && (int) $attempts >= self::MAX_LOGIN_ATTEMPTS ) {
-            $allowed_html = [
-                'strong' => [],
-            ];
-            
-            $error_message = sprintf(
-                /* translators: %s: The bold text for 'ERROR' or another emphasis string. */
-                __( '%s: Too many failed login attempts. This IP address is blocked for 15 minutes.', 'nodoss' ),
-                '<strong>' . esc_html__( 'ERROR', 'nodoss' ) . '</strong>'
-            );
+            // Splitting placeholder avoids formatting errors entirely across strict localization setups
+            $error_message = '<strong>' . esc_html__( 'ERROR', 'nodoss' ) . '</strong>: ' . esc_html__( 'Too many failed login attempts. This IP address is blocked for 15 minutes.', 'nodoss' );
 
             return new WP_Error(
                 'blocked_ip',
-                wp_kses( $error_message, $allowed_html )
+                $error_message
             );
         }
 
         return $user;
     }
-
 
     /**
      * Increments or creates the failed login counter for the source IP.
@@ -216,7 +195,6 @@ final class NoDossLoginProtectionManager
     {
         $clientIp = $this->NoDossgetClientIp();
 
-        // Enforce strict config-level exclusion rule to completely protect admins from tracking
         if ( $this->isClientIpWhitelisted( $clientIp ) ) {
             return;
         }
@@ -232,7 +210,6 @@ final class NoDossLoginProtectionManager
         $newAttempts = (int) $attempts + 1;
         set_transient( $transientName, $newAttempts, self::LOCKOUT_DURATION_SECONDS );
     }
-
 
     /**
      * Generates a safe, sanitized, fixed-length transient lookup string.
@@ -258,9 +235,8 @@ final class NoDossLoginProtectionManager
             }
         }
 
-        // 1. Prioritize Cloudflare's structural header if it exists.
+        // Prioritize Cloudflare's structural header if it exists.
         if ( ! empty( $_SERVER['HTTP_CF_CONNECTING_IP'] ) ) {
-            // FIXED: Added sanitize_text_field to satisfy WordPress InputNotSanitized sniffer rules
             $rawCfIp  = sanitize_text_field( wp_unslash( $_SERVER['HTTP_CF_CONNECTING_IP'] ) );
             $cfClient = filter_var( trim( $rawCfIp ), FILTER_VALIDATE_IP );
             if ( false !== $cfClient ) {
@@ -268,9 +244,8 @@ final class NoDossLoginProtectionManager
             }
         }
 
-        // 2. Multi-proxy validation fallback chain (X-Forwarded-For)
+        // Multi-proxy validation fallback chain (X-Forwarded-For)
         if ( ! empty( $_SERVER['HTTP_X_FORWARDED_FOR'] ) ) {
-            // FIXED: Added sanitize_text_field to satisfy WordPress InputNotSanitized sniffer rules
             $rawForwarded = sanitize_text_field( wp_unslash( $_SERVER['HTTP_X_FORWARDED_FOR'] ) );
             $ipChain      = array_map( 'trim', explode( ',', $rawForwarded ) );
             
@@ -281,8 +256,7 @@ final class NoDossLoginProtectionManager
                 }
             }
         }
-
-        // 3. Absolute architectural backup
+        
         return $remoteIp;
     }
 }
