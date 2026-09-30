@@ -18,5 +18,4 @@ jobs:
           SVN_USERNAME: ${{ secrets.SVN_USERNAME }}
           SVN_PASSWORD: ${{ secrets.SVN_PASSWORD }}
           SLUG: nodoss
-          # Strips the 'v' prefix so the SVN tag matches your "Stable tag: 1.1.6.1" exactly
           VERSION: ${{ github.ref_name }}
