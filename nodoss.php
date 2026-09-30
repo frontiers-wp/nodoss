@@ -9,7 +9,11 @@
  * Plugin Name: NoDoss
  * Plugin URI:  https://wordpress.org/plugins/nodoss
  * Description: An ultra-lightweight, zero-allocation security and gateway defense engine for WordPress. 
+<<<<<<< HEAD
  * Version:     1.1.9
+=======
+ * Version:     1.1.8
+>>>>>>> 7bd2d4afe153e6f24d95a5c2747d4b525106688f
  * Author:      Edwin Bekedam
  * Author URI:  https://github.com/frontiers-wp/nodoss
  * Text Domain: nodoss
